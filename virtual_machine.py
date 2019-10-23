@@ -16,7 +16,7 @@ MNEMONICS_TRANSLATION = {
     "blt": 12,
     "beq": 13,
     "move": 14,
-    "inout": 15                      # TODO - inout only int (register)
+    "inout": 15                      
 }
 
 REGISTERS_TRANSLATION = {
