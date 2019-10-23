@@ -1,33 +1,39 @@
 from virtual_machine import clearInput, VM
 
-with open("test.inasm") as f:
+if __name__ == "__main__":
 
-    print("Clearing input...")
+    # Input for Inassembly source file
 
-    # Clear input (remove commentary and blank space)
-    code = clearInput(f.read())
+    srcFile = input("Source file: ")
 
-    print("Done clearing.")
+    with open(srcFile) as file:
 
-    # Instantiate the virtual machine
-    myVM = VM()
+        print("Clearing input...")
 
-    print("Translating Inassembly to machine code...")
+        # Clear input (remove commentary and blank space)
+        code = clearInput(file.read())
 
-    # Translate Inassembly code into machine code
-    if myVM.translate(code):
-        print("Done translating.")
+        print("Done clearing.")
 
-        print(myVM.programMemory)
+        # Instantiate the virtual machine
+        myVM = VM()
 
-        option = input("Process step by step [y/n]? ")
+        print("Translating Inassembly to machine code...")
 
-        # Process instructions
-        while myVM.process():
-            print(myVM.registers)
-            print(myVM.dataMemory)
+        # Translate Inassembly code into machine code
+        if myVM.translate(code):
+            print("Done translating.")
 
-            if option == 'y':
-                input("Press enter to continue...")
+            print(myVM.programMemory)
 
-    f.close()
+            option = input("Process step by step [y/n]? ")
+
+            # Process instructions
+            while myVM.process():
+                print(myVM.registers)
+                print(myVM.dataMemory)
+
+                if option == 'y':
+                    input("Press enter to continue...")
+
+        file.close()
