@@ -1,0 +1,26 @@
+main:
+
+    move r0, zero           // setting r0 = 0
+    addi r0, r0, 5          // setting r0 = 5
+
+label1:
+    move r1, zero
+    addi r1, r1, 10
+
+    add r2, r1, r0
+
+    /*
+    jump end
+
+    add r5, r2, r2
+
+    store r0, 2
+    store r1, 7
+    store r2, 10
+    */
+
+
+end:
+    add r5, r1, r2
+
+    store r5, 50
