@@ -22,16 +22,15 @@ if __name__ == "__main__":
 
         # Translate Inassembly code into machine code
         if myVM.translate(code):
-            print("Done translating.")
+            print("Done translating.\n")
 
-            print(myVM.programMemory)
+            myVM.show(True)
 
             option = input("Process step by step [y/n]? ")
 
             # Process instructions
             while myVM.process():
-                print(myVM.registers)
-                print(myVM.dataMemory)
+                myVM.show()
 
                 if option == 'y':
                     input("Press enter to continue...")

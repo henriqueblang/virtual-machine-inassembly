@@ -91,6 +91,35 @@ class VM:
             7: 0                     # Program Counter
         }
 
+    # Show Virtual Machine memory
+    def show(self, printProgramMemory = False):
+        if printProgramMemory:
+            print("Program memory: ")
+
+            for address, data in enumerate(self.programMemory):
+                hexAddress = "0x%0.2X" % address
+
+                print("[" + hexAddress + "] " + data)    
+
+            print()
+
+        print("Data memory: ")
+
+        for address, data in self.dataMemory.items():
+            hexAddress = "0x%0.2X" % address
+
+            print("[" + hexAddress + "] " + str(data))
+
+        print("\nRegisters: ")
+
+        for register, data in self.registers.items():
+            registerName = register != 6 and "r" + str(register) or "zero"
+
+            print(registerName + ": " + str(data))
+
+        print()
+
+    # Translate source code into machine code
     def translate(self, original):
 
         # Position which the next translated instruction will be stored in the program memory
@@ -149,9 +178,9 @@ class VM:
                             # While we can't update the instruction, it'll have a dummy address written instead of the label (maybe) 
                             # future address
 
-                            # label -> [(dados), (dados)]
-                            # 1 -> endereço (índice da lista do prograMemory)
-                            # 2 -> índice da string que começa o endereço
+                            # label -> [(data), (data)]
+                            # 1 -> address (index in programMemory)
+                            # 2 -> string index which the address starts
                             if clearedData in instructionUpdate:
                                 instructionUpdate[clearedData].append([programMemoryPointer, len(instructionTranslated)])
                             else:
@@ -202,6 +231,7 @@ class VM:
 
         return True
 
+    # Process machine code
     def process(self):
         
         # Address of instruction to be processed (Program Counter value)
@@ -237,6 +267,7 @@ class VM:
 
         return processingMethod(self, instruction)
 
+    # Add 2 registers
     def add(self, instruction):
 
         # Recover relevant data to process from instruction
@@ -260,6 +291,7 @@ class VM:
 
         return True
 
+    # Add 1 register and 1 immediate
     def addi(self, instruction):
 
         # Recover relevant data to process from instruction
@@ -283,7 +315,7 @@ class VM:
 
         return True
 
-
+    # Subtract 2 registers
     def sub(self, instruction):
 
         # Recover relevant data to process from instruction
@@ -307,6 +339,7 @@ class VM:
 
         return True
 
+    # Subtract 1 register and 1 immediate
     def subi(self, instruction):
 
         # Recover relevant data to process from instruction
@@ -330,6 +363,7 @@ class VM:
 
         return True
 
+    # Multiply 2 registers
     def mult(self, instruction):
 
         # Recover relevant data to process from instruction
@@ -353,6 +387,7 @@ class VM:
 
         return True
 
+    # Multiply 1 register and 1 immediate
     def multi(self, instruction):
 
         # Recover relevant data to process from instruction
@@ -376,6 +411,7 @@ class VM:
 
         return True
 
+    # Divide 2 registers
     def div(self, instruction):
 
         # Recover relevant data to process from instruction
@@ -399,6 +435,7 @@ class VM:
 
         return True
 
+    # Divide 1 register and 1 immediate
     def divi(self, instruction):
 
         # Recover relevant data to process from instruction
@@ -422,6 +459,7 @@ class VM:
 
         return True
         
+    # Load data from data memory
     def load(self, instruction):
 
         # Recover relevant data to process from instruction
@@ -448,6 +486,7 @@ class VM:
 
         return True
 
+    # Store data in data memory
     def store(self, instruction):
 
         # Recover relevant data to process from instruction
@@ -470,6 +509,7 @@ class VM:
 
         return True
 
+    # Jump to address
     def jump(self, instruction):
 
         # Recover relevant data to process from instruction
@@ -478,7 +518,7 @@ class VM:
         try:
             address = int(instruction[10:], 2)
 
-            # jump (change address of Program Counter) to address
+            # Jump (change address of Program Counter) to address
             self.registers[7] = address
 
         except ValueError:
@@ -491,6 +531,7 @@ class VM:
 
         return True
 
+    # Jump to branch if register_1 > register_2
     def bgt(self, instruction):
 
         # Recover relevant data to process from instruction
@@ -501,7 +542,7 @@ class VM:
             sourceRegister2 = int(instruction[7:10], 2)
             address = int(instruction[10:], 2)
 
-            # jump (change address of Program Counter) to address if sourceRegister1 > sourceRegister2
+            # Jump (change address of Program Counter) to address if sourceRegister1 > sourceRegister2
             if sourceRegister1 > sourceRegister2:
                 self.registers[7] = address
 
@@ -515,6 +556,7 @@ class VM:
 
         return True
 
+    # Jump to branch if register_1 < register_2
     def blt(self, instruction):
 
         # Recover relevant data to process from instruction
@@ -525,7 +567,7 @@ class VM:
             sourceRegister2 = int(instruction[7:10], 2)
             address = int(instruction[10:], 2)
 
-            # jump (change address of Program Counter) to address if sourceRegister1 < sourceRegister2
+            # Jump (change address of Program Counter) to address if sourceRegister1 < sourceRegister2
             if sourceRegister1 < sourceRegister2:
                 self.registers[7] = address
 
@@ -539,6 +581,7 @@ class VM:
 
         return True
 
+    # Jump to branch if register_1 == register_2
     def beq(self, instruction):
 
         # Recover relevant data to process from instruction
@@ -549,7 +592,7 @@ class VM:
             sourceRegister2 = int(instruction[7:10], 2)
             address = int(instruction[10:], 2)
 
-            # jump (change address of Program Counter) to address if sourceRegister1 = sourceRegister2
+            # Jump (change address of Program Counter) to address if sourceRegister1 = sourceRegister2
             if sourceRegister1 == sourceRegister2:
                 self.registers[7] = address
 
@@ -563,6 +606,7 @@ class VM:
 
         return True
 
+    # Set value of destination register to value of source register
     def move(self, instruction):
 
         # Recover relevant data to process from instruction
@@ -585,6 +629,7 @@ class VM:
 
         return True
 
+    # Input and output system call
     def inout(self, instruction):
         
         # Recover relevant data to process from instruction
