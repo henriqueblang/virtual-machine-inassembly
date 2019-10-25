@@ -132,10 +132,10 @@ class VM:
         labelRegex = re.compile("^([a-zA-Z_]+[a-zA-Z_0-9]*):\r?\n?$")
 
         # Label mapping
-        labelMapping = dict()
+        labelMapping = {}
 
         # Dictionary of instructions to be updated after a label is defined
-        instructionUpdate = dict() 
+        instructionUpdate = {}
 
         for data in original:
             # Remove possible commas from data
@@ -189,7 +189,7 @@ class VM:
                             # Dummy address
                             instructionTranslated += '{0:06b}'.format(0)
                     else:
-                        # It's a label
+                        # It's a label definition
                         labelData = labelRegex.search(clearedData)
                         label = labelData.group(1) 
                         
@@ -214,7 +214,6 @@ class VM:
                                 self.programMemory[programMemoryAddress] = oldInstruction[:dummyAddressStart] + '{0:06b}'.format(programMemoryPointer) + oldInstruction[(dummyAddressStart + 6):]
 
                             del instructionUpdate[label]   
-
 
             # If the instruction size limit is reached, store in program memory and advance pointer to store the next instruction
             if len(instructionTranslated) == self.ARCHITECTURE_SIZE:
@@ -543,7 +542,7 @@ class VM:
             address = int(instruction[10:], 2)
 
             # Jump (change address of Program Counter) to address if sourceRegister1 > sourceRegister2
-            if sourceRegister1 > sourceRegister2:
+            if self.registers[sourceRegister1] > self.registers[sourceRegister2]:
                 self.registers[7] = address
 
         except ValueError:
@@ -568,7 +567,7 @@ class VM:
             address = int(instruction[10:], 2)
 
             # Jump (change address of Program Counter) to address if sourceRegister1 < sourceRegister2
-            if sourceRegister1 < sourceRegister2:
+            if self.registers[sourceRegister1] < self.registers[sourceRegister2]:
                 self.registers[7] = address
 
         except ValueError:
@@ -593,7 +592,7 @@ class VM:
             address = int(instruction[10:], 2)
 
             # Jump (change address of Program Counter) to address if sourceRegister1 = sourceRegister2
-            if sourceRegister1 == sourceRegister2:
+            if self.registers[sourceRegister1] == self.registers[sourceRegister2]:
                 self.registers[7] = address
 
         except ValueError:

@@ -1,0 +1,21 @@
+
+main:
+    move r0, zero
+    move r1, zero
+
+    move r2, zero
+    addi r2, r2, 50
+
+loop:
+    beq r1, r2, end
+
+    addi r0, r0, 1
+    addi r1, r1, 5
+
+    jump loop
+
+end:
+    move r5, zero
+    addi r5, r5, 1
+
+    inout r0
