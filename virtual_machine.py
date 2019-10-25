@@ -422,7 +422,7 @@ class VM:
             sourceRegister2 = int(instruction[13:], 2)
 
             # destinationRegister = sourceRegister1 / sourceRegister2
-            self.registers[destinationRegister] = self.registers[sourceRegister1] / self.registers[sourceRegister2]
+            self.registers[destinationRegister] = int(self.registers[sourceRegister1] / self.registers[sourceRegister2])
 
         except ValueError:
             # Can't cast register identification to int
@@ -446,7 +446,7 @@ class VM:
             immediate = int(instruction[10:], 2)
 
             # destinationRegister = sourceRegister1 / immediate
-            self.registers[destinationRegister] = self.registers[sourceRegister1] / immediate
+            self.registers[destinationRegister] = int(self.registers[sourceRegister1] / immediate)
 
         except ValueError:
             # Can't cast register identification or immediate to int
