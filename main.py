@@ -5,7 +5,7 @@ if __name__ == "__main__":
     # Input for Inassembly source file
     srcFile = input("Source file: ")
 
-    with open(srcFile) as file:
+    with open("src/" + srcFile) as file:
 
         print("Clearing input...")
 
