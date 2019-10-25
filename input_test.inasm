@@ -1,0 +1,8 @@
+main:
+	move r5, zero      // input
+	inout r0
+	inout r1
+
+	add r3, r0, r1
+	addi r5, r5, 1     // output
+	inout r3
