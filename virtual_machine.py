@@ -21,13 +21,21 @@ MNEMONICS_TRANSLATION = {
 
 REGISTERS_TRANSLATION = {
     "r0": 0,
+    "@0": 0,
     "r1": 1,
+    "@1": 1,
     "r2": 2,
+    "@2": 2,
     "r3": 3,
+    "@3": 3,
     "r4": 4,
+    "@4": 4,
     "r5": 5,
+    "@5": 5,
     "zero": 6,
-    "r7": 7
+    "@6": 6,
+    "r7": 7,
+    "@7": 7
 }
 
 # Padding required to complete a 16-bit instruction
