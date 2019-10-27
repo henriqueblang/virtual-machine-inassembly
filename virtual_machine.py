@@ -159,7 +159,8 @@ class VM:
                 # That is, a possible immediate value to arithmetics purpose, address or label
 
                 try:
-                    immediateData = int(clearedData)
+                    # https://stackoverflow.com/questions/209513/convert-hex-string-to-int-in-python
+                    immediateData = int(clearedData, 0)
 
                     instructionTranslated += '{0:06b}'.format(immediateData)
                 except ValueError:
