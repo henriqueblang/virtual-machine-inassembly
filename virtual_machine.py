@@ -70,11 +70,11 @@ def commentRemover(text):
 
     return re.sub(pattern, replacer, text)
 
-def clearInput(text):
-    input = []
-    input.extend(commentRemover(text).split())
+def clearInput(input):
+    output = []
+    output.extend((commentRemover(input).replace(",", " ")).split())
 
-    return input
+    return output
 
 class VM:
 
