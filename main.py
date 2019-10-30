@@ -1,5 +1,4 @@
 from virtual_machine import clearInput, VM
-from datetime import datetime
 
 if __name__ == "__main__":
 

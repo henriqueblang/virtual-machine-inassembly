@@ -1,6 +1,4 @@
 import re
-from math import log
-from datetime import datetime
 
 MNEMONICS_TRANSLATION = {
     "add": 0,
