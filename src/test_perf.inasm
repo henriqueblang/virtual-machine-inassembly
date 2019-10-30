@@ -1,0 +1,13 @@
+addi r0, r0, 50
+addi r5, r5, 1
+
+loop:
+    beq r1, r0, end
+
+    inout r1
+    addi r1, r1, 1
+
+    jump loop
+
+end:
+    inout r1

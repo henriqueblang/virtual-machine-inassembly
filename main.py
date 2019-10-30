@@ -1,4 +1,5 @@
 from virtual_machine import clearInput, VM
+from datetime import datetime
 
 if __name__ == "__main__":
 
@@ -22,12 +23,13 @@ if __name__ == "__main__":
         # Translate Inassembly code into machine code
         if myVM.translate(code):
             print("Done translating.\n")
-
+            
             myVM.show(True)
-
+            
             option = input("Process step by step [y/n]? ")
 
             # Process instructions
+            startProcess = datetime.now()
             while myVM.process():
                 myVM.show()
 

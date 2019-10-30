@@ -1,13 +1,13 @@
 main:
 
-    move r0, zero           // setting r0 = 0
-    addi r0, r0, 5          // setting r0 = 5
+    move r0,zero           // setting r0 = 0
+    addi r0,r0,5          // setting r0 = 5
 
 label1:
-    move r1, zero
-    addi r1, r1, 10
+    move r1,zero
+    addi r1,r1, 10
 
-    add r2, r1, r0
+    add r2, r1,r0
 
     /*
     jump end
@@ -21,6 +21,6 @@ label1:
 
 
 end:
-    add r5, r1, r2
+    add r5,r1,r2
 
     store r5, 50

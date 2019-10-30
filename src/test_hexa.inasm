@@ -1,0 +1,4 @@
+move @0, zero
+addi @0, @6, 0x11
+addi @5, zero, 1
+inout r0
