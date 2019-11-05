@@ -1,7 +1,6 @@
 from virtual_machine import clearInput, VM
 
-if __name__ == "__main__":
-
+def main():
     # Input for Inassembly source file
     srcFile = input("Source file: ")
 
@@ -28,7 +27,6 @@ if __name__ == "__main__":
             option = input("Process step by step [y/n]? ")
 
             # Process instructions
-            startProcess = datetime.now()
             while myVM.process():
                 myVM.show()
 
@@ -36,3 +34,7 @@ if __name__ == "__main__":
                     input("Press enter to continue...")
 
         file.close()
+
+if __name__ == "__main__":
+    main()
+    
