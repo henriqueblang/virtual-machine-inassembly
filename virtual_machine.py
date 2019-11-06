@@ -38,18 +38,18 @@ REGISTERS_TRANSLATION = {
     "@7": 7
 }
 
-# Padding required to complete a 16-bit instruction
+# Padding required to complete a 32-bit instruction
 # Key is instruction op-code, value is amount of zeroes after op-code
 INSTRUCTION_PADDING = {
-    0: 3,
-    2: 3,
-    4: 3,
-    6: 3,
+    0: 19,
+    2: 19,
+    4: 19,
+    6: 19,
     8: 3,
     9: 3,
     10: 6,
-    14: 6,
-    15: 9
+    14: 22,
+    15: 25
 }
 
 def commentRemover(text):
@@ -78,8 +78,8 @@ def clearInput(input):
 
 class VM:
 
-    # Architecture of 16 bits
-    ARCHITECTURE_SIZE = 16
+    # Architecture of 32 bits
+    ARCHITECTURE_SIZE = 32
 
     def __init__(self):
 
@@ -158,7 +158,7 @@ class VM:
 
                 instructionTranslated |= (opcode << shiftHelper)
 
-                # Padding in order to complete a 16-bit instruction
+                # Padding in order to complete a 32-bit instruction
                 if opcode in INSTRUCTION_PADDING:
                     shiftHelper -= INSTRUCTION_PADDING[opcode]
 
@@ -174,7 +174,7 @@ class VM:
                 try:
                     # https://stackoverflow.com/questions/209513/convert-hex-string-to-int-in-python
                     immediateData = int(data, 0)
-                    shiftHelper -= 6
+                    shiftHelper -= 22
 
                     instructionTranslated |= (immediateData << shiftHelper)
                 except ValueError:
@@ -184,7 +184,7 @@ class VM:
                         # It's either a label called in a jump or branch or a syntax error
                         # Let's assume it's a label
 
-                        shiftHelper -= 6
+                        shiftHelper -= 22
                         if data in labelMapping:
                             # The supposed label is already mapped, let's write its address
 
@@ -287,7 +287,7 @@ class VM:
     def add(self, instruction, shiftHelper):
 
         # Recover relevant data to process from instruction
-        # 0000 0 (3) rdest (3) rsrc1 (3) rsrc2 (3)
+        # 0000 0 (19) rdest (3) rsrc1 (3) rsrc2 (3)
 
         shiftHelper -= 3
         destinationRegister = (instruction >> shiftHelper) & 0x07
@@ -307,7 +307,7 @@ class VM:
     def addi(self, instruction, shiftHelper):
 
         # Recover relevant data to process from instruction
-        # 0001 rdest (3) rsrc1 (3) imm (6)
+        # 0001 rdest (3) rsrc1 (3) imm (22)
 
         shiftHelper -= 3
         destinationRegister = (instruction >> shiftHelper) & 0x07
@@ -315,8 +315,8 @@ class VM:
         shiftHelper -= 3
         sourceRegister1 = (instruction >> shiftHelper) & 0x07
 
-        shiftHelper -= 6
-        immediate = (instruction >> shiftHelper) & 0x3F
+        shiftHelper -= 22
+        immediate = (instruction >> shiftHelper) & 0x3FFFFF
 
         # destinationRegister = sourceRegister1 + immediate
         self.registers[destinationRegister] = self.registers[sourceRegister1] + immediate
@@ -327,7 +327,7 @@ class VM:
     def sub(self, instruction, shiftHelper):
 
         # Recover relevant data to process from instruction
-        # 0010 0 (3) rdest (3) rsrc1 (3) rsrc2 (3)
+        # 0010 0 (19) rdest (3) rsrc1 (3) rsrc2 (3)
 
         shiftHelper -= 3
         destinationRegister = instruction & (1 << shiftHelper)
@@ -347,7 +347,7 @@ class VM:
     def subi(self, instruction, shiftHelper):
 
         # Recover relevant data to process from instruction
-        # 0011 rdest (3) rsrc1 (3) imm (6)
+        # 0011 rdest (3) rsrc1 (3) imm (22)
 
         shiftHelper -= 3
         destinationRegister = (instruction >> shiftHelper) & 0x07
@@ -355,8 +355,8 @@ class VM:
         shiftHelper -= 3
         sourceRegister1 = (instruction >> shiftHelper) & 0x07
 
-        shiftHelper -= 6
-        immediate = (instruction >> shiftHelper) & 0x3F
+        shiftHelper -= 22
+        immediate = (instruction >> shiftHelper) & 0x3FFFFF
 
         # destinationRegister = sourceRegister1 - immediate
         self.registers[destinationRegister] = self.registers[sourceRegister1] - immediate
@@ -367,7 +367,7 @@ class VM:
     def mult(self, instruction, shiftHelper):
 
         # Recover relevant data to process from instruction
-        # 0100 0 (3) rdest (3) rsrc1 (3) rsrc2 (3)
+        # 0100 0 (19) rdest (3) rsrc1 (3) rsrc2 (3)
 
         shiftHelper -= 3
         destinationRegister = (instruction >> shiftHelper) & 0x07
@@ -387,7 +387,7 @@ class VM:
     def multi(self, instruction, shiftHelper):
 
         # Recover relevant data to process from instruction
-        # 0101 rdest (3) rsrc1 (3) imm (6)
+        # 0101 rdest (3) rsrc1 (3) imm (22)
 
         shiftHelper -= 3
         destinationRegister = (instruction >> shiftHelper) & 0x07
@@ -395,8 +395,8 @@ class VM:
         shiftHelper -= 3
         sourceRegister1 = (instruction >> shiftHelper) & 0x07
 
-        shiftHelper -= 6
-        immediate = (instruction >> shiftHelper) & 0x3F
+        shiftHelper -= 22
+        immediate = (instruction >> shiftHelper) & 0x3FFFFF
 
         # destinationRegister = sourceRegister1 * immediate
         self.registers[destinationRegister] = self.registers[sourceRegister1] * immediate
@@ -407,7 +407,7 @@ class VM:
     def div(self, instruction, shiftHelper):
 
         # Recover relevant data to process from instruction
-        # 0111 0 (3) rdest (3) rsrc1 (3) rsrc2 (3)
+        # 0111 0 (19) rdest (3) rsrc1 (3) rsrc2 (3)
 
         shiftHelper -= 3
         destinationRegister = (instruction >> shiftHelper) & 0x07
@@ -427,7 +427,7 @@ class VM:
     def divi(self, instruction, shiftHelper):
 
         # Recover relevant data to process from instruction
-        # 0111 rdest (3) rsrc1 (3) imm (6)
+        # 0111 rdest (3) rsrc1 (3) imm (22)
 
         shiftHelper -= 3
         destinationRegister = (instruction >> shiftHelper) & 0x07
@@ -435,8 +435,8 @@ class VM:
         shiftHelper -= 3
         sourceRegister1 = (instruction >> shiftHelper) & 0x07
 
-        shiftHelper -= 6
-        immediate = (instruction >> shiftHelper) & 0x3F
+        shiftHelper -= 22
+        immediate = (instruction >> shiftHelper) & 0x3FFFFF
 
         # destinationRegister = sourceRegister1 / immediate
         self.registers[destinationRegister] = int(self.registers[sourceRegister1] / immediate)
@@ -447,13 +447,13 @@ class VM:
     def load(self, instruction, shiftHelper):
 
         # Recover relevant data to process from instruction
-        # 1000 0 (3) rdest (3) address (6)
+        # 1000 0 (3) rdest (3) address (22)
 
         shiftHelper -= 3
         destinationRegister = (instruction >> shiftHelper) & 0x07
 
-        shiftHelper -= 6
-        address = (instruction >> shiftHelper) & 0x3F
+        shiftHelper -= 22
+        address = (instruction >> shiftHelper) & 0x3FFFFF
 
         # Default value for addresses that were not updated by a store instruction
         if not address in self.dataMemory:
@@ -468,13 +468,13 @@ class VM:
     def store(self, instruction, shiftHelper):
 
         # Recover relevant data to process from instruction
-        # 1001 0 (3) rsrc (3) address (6)  
+        # 1001 0 (3) rsrc (3) address (22)  
 
         shiftHelper -= 3
         sourceRegister = (instruction >> shiftHelper) & 0x07
 
-        shiftHelper -= 6
-        address = (instruction >> shiftHelper) & 0x3F
+        shiftHelper -= 22
+        address = (instruction >> shiftHelper) & 0x3FFFFF
 
         # value at address (data memory) = sourceRegister
         self.dataMemory[address] = self.registers[sourceRegister]
@@ -485,10 +485,10 @@ class VM:
     def jump(self, instruction, shiftHelper):
 
         # Recover relevant data to process from instruction
-        # 1010 0 (6) address (6)  
+        # 1010 0 (6) address (22)  
 
-        shiftHelper -= 6
-        address = (instruction >> shiftHelper) & 0x3F
+        shiftHelper -= 22
+        address = (instruction >> shiftHelper) & 0x3FFFFF
 
         # Jump (change address of Program Counter) to address
         self.registers[7] = address
@@ -499,7 +499,7 @@ class VM:
     def bgt(self, instruction, shiftHelper):
 
         # Recover relevant data to process from instruction
-        # 1011 rsrc1 (3) rsrc2 (3) address (6)
+        # 1011 rsrc1 (3) rsrc2 (3) address (22)
 
         shiftHelper -= 3
         sourceRegister1 = (instruction >> shiftHelper) & 0x07
@@ -507,8 +507,8 @@ class VM:
         shiftHelper -= 3
         sourceRegister2 = (instruction >> shiftHelper) & 0x07
 
-        shiftHelper -= 6
-        address = (instruction >> shiftHelper) & 0x3F
+        shiftHelper -= 22
+        address = (instruction >> shiftHelper) & 0x3FFFFF
 
         # Jump (change address of Program Counter) to address if sourceRegister1 > sourceRegister2
         if self.registers[sourceRegister1] > self.registers[sourceRegister2]:
@@ -520,7 +520,7 @@ class VM:
     def blt(self, instruction, shiftHelper):
 
         # Recover relevant data to process from instruction
-        # 1100 rsrc1 (3) rsrc2 (3) address (6)
+        # 1100 rsrc1 (3) rsrc2 (3) address (22)
 
         shiftHelper -= 3
         sourceRegister1 = (instruction >> shiftHelper) & 0x07
@@ -528,8 +528,8 @@ class VM:
         shiftHelper -= 3
         sourceRegister2 = (instruction >> shiftHelper) & 0x07
 
-        shiftHelper -= 6
-        address = (instruction >> shiftHelper) & 0x3F
+        shiftHelper -= 22
+        address = (instruction >> shiftHelper) & 0x3FFFFF
 
         # Jump (change address of Program Counter) to address if sourceRegister1 < sourceRegister2
         if self.registers[sourceRegister1] < self.registers[sourceRegister2]:
@@ -541,7 +541,7 @@ class VM:
     def beq(self, instruction, shiftHelper):
 
         # Recover relevant data to process from instruction
-        # 1101 rsrc1 (3) rsrc2 (3) address (6)
+        # 1101 rsrc1 (3) rsrc2 (3) address (22)
 
         shiftHelper -= 3
         sourceRegister1 = (instruction >> shiftHelper) & 0x07
@@ -549,8 +549,8 @@ class VM:
         shiftHelper -= 3
         sourceRegister2 = (instruction >> shiftHelper) & 0x07
 
-        shiftHelper -= 6
-        address = (instruction >> shiftHelper) & 0x3F
+        shiftHelper -= 22
+        address = (instruction >> shiftHelper) & 0x3FFFFF
 
         # Jump (change address of Program Counter) to address if sourceRegister1 = sourceRegister2
         if self.registers[sourceRegister1] == self.registers[sourceRegister2]:
@@ -562,7 +562,7 @@ class VM:
     def move(self, instruction, shiftHelper):
 
         # Recover relevant data to process from instruction
-        # 1110 0 (6) rdest (3) rsrc (3)
+        # 1110 0 (22) rdest (3) rsrc (3)
 
         shiftHelper -= 3
         destinationRegister = (instruction >> shiftHelper) & 0x07
@@ -579,7 +579,7 @@ class VM:
     def inout(self, instruction, shiftHelper):
         
         # Recover relevant data to process from instruction
-        # 1111 0 (9) rdest (3) 
+        # 1111 0 (25) rdest (3) 
 
         systemCall = self.registers[5]
 
