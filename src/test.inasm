@@ -8,8 +8,7 @@ label1:
     addi r1,r1, 10
 
     add r2, r1,r0
-
-    /*
+    
     jump end
 
     add r5, r2, r2
@@ -17,7 +16,7 @@ label1:
     store r0, 2
     store r1, 7
     store r2, 10
-    */
+    
 
 
 end:

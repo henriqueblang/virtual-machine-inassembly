@@ -76,16 +76,34 @@ def clearInput(input):
 
     return output
 
+
+# Cache line
+class Line:
+    def __init__(self, blockSize):
+        self.tag = None
+
+        self.block = [None] * blockSize
+
+
 class VM:
 
     # Architecture of 32 bits
     ARCHITECTURE_SIZE = 32
+
+    # Cache lines (must be 2^something)
+    CACHE_LINES = 4
+
+    # Cache columns (must be 2^something)
+    CACHE_BLOCK = 4
 
     def __init__(self):
 
         # Memory initialization
         self.programMemory = []
         self.dataMemory = {}
+
+        # Cache initialization
+        self.cacheMemory = [Line(self.CACHE_BLOCK) for i in range(self.CACHE_LINES)]
 
         # Registers initialization
         self.registers = {
@@ -244,22 +262,61 @@ class VM:
 
         return True
 
+    def _cache(self, pc):
+
+        # Decoding PC
+
+        column = pc & 0x03
+
+        line = (pc & 0xC) >> 2
+
+        tag = (pc & 0xFFFFFFF0) >> 4
+
+        if line >= len(self.cacheMemory):
+            print("Error when decoding PC... Did you set correctly the size of the cache memory?")
+
+            return
+
+        cacheLine = self.cacheMemory[line]
+
+        # Check if cache line is valid or if the tag is different
+        if cacheLine.tag is None or cacheLine.tag != tag:
+            print("Miss!")
+
+            cacheLine.tag = tag
+
+            for i in range(column, self.CACHE_BLOCK):
+                index = pc + (i - column)
+
+                if index >= len(self.programMemory):
+                    break
+
+                cacheLine.block[i] = self.programMemory[index]
+
+        else:
+            print("Hit!")
+
+        return cacheLine.block[column]
+
     # Process machine code
     def process(self):
         
         # Address of instruction to be processed (Program Counter value)
-        instructionAddress = self.registers[7]
+        pc = self.registers[7]
 
         # Update Program Counter
         self.registers[7] += 1
 
-        if instructionAddress >= len(self.programMemory):
+        if pc >= len(self.programMemory):
             print("Reached end of program memory, the application is finalized.")
 
             return False
 
         # Recovering instruction from program memory
-        instruction = self.programMemory[instructionAddress]
+        #instruction = self.programMemory[pc]
+
+        # Search instruction in cache memory
+        instruction = self._cache(pc)
 
         shiftHelper = self.ARCHITECTURE_SIZE
 
@@ -270,7 +327,7 @@ class VM:
 
         # Invalid op-code
         if not opcode in self.OPCODES_METHOD:
-            print("Error when processing instruction " + bin(instruction) + " at address " + bin(instructionAddress) + ", invalid opcode (" + bin(opcode) + ")")
+            print("Error when processing instruction " + bin(instruction) + " at address " + bin(pc) + ", invalid opcode (" + bin(opcode) + ")")
 
             return False 
 
