@@ -1,0 +1,7 @@
+main:
+    inout r0
+    inout r1
+    add r0, r1, r0
+    divi r0, r0, 2
+    addi r5, r5, 1
+    inout r0

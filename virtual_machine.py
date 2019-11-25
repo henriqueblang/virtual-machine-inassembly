@@ -145,6 +145,18 @@ class VM:
 
         print()
 
+        print("Cache memory: ")
+
+        for line in range(self.CACHE_LINES):
+            cacheLine = self.cacheMemory[line]
+
+            if cacheLine.tag is None:
+                continue
+
+            print("[" + str(line) + "] " + str(cacheLine.block))
+
+        print()
+
     # Translate source code into machine code
     def translate(self, original):
 
@@ -285,8 +297,11 @@ class VM:
 
             cacheLine.tag = tag
 
-            for i in range(column, self.CACHE_BLOCK):
-                index = pc + (i - column)
+            if pc % self.CACHE_BLOCK != 0:
+                pc = pc - (pc % self.CACHE_BLOCK)
+
+            for i in range(self.CACHE_BLOCK):
+                index = pc + i
 
                 if index >= len(self.programMemory):
                     break
@@ -311,9 +326,6 @@ class VM:
             print("Reached end of program memory, the application is finalized.")
 
             return False
-
-        # Recovering instruction from program memory
-        #instruction = self.programMemory[pc]
 
         # Search instruction in cache memory
         instruction = self._cache(pc)

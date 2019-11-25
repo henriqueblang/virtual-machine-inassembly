@@ -1,0 +1,29 @@
+// Ler entrada
+inout r0
+
+// Penúltimo
+move r1, zero
+
+// Último
+addi r2, r2, 1
+
+// Atual
+add r3, r1, r2
+
+// i
+addi r4, r4, 2
+
+loop:
+    bgt r4, r0, end
+
+    add r3, r1, r2
+    move r1, r2
+    move r2, r3
+    addi r4, r4, 1
+
+    jump loop
+
+end:
+    addi r5, r5, 1
+
+    inout r3
