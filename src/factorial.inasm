@@ -1,14 +1,14 @@
 inout r0
-addi r1, r1, 1
+addi @1, @1, 1
 
 loop:
-    beq r0, zero, end
+    beq @0, zero, end
 
-    mult r1, r1, r0
-    subi r0, r0, 1
+    mult @1, @1, @0
+    subi @0, @0, 1
 
     jump loop
 
 end:
-    addi r5, r5, 1
-    inout r1
+    addi @5, @5, 1
+    inout @1
